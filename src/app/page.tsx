@@ -36,18 +36,13 @@ export default function Home() {
     >
       <main className={`flex flex-col gap-8 row-start-2 items-center w-full`}>
         <div className="flex flex-col items-center gap-2">
-          <div className="flex gap-x-[1px] ">
+          <div className="flex gap-x-[2px] ">
             <span className="text-2xl font-semibold">Hi, I am </span>
-            <Image
-              alt="logo"
-              src="/logo.svg"
-              className="mb-1"
-              width={100}
-              height={60}
-            />
+            <span className="text-2xl font-semibold text-orange-600"
+            >RestaurantSeek</span>
           </div>
           <span className="font-medium">
-            Search for YC backed companies with AI
+            Search for Restaurants in NYC
           </span>
         </div>
         <SearchComponent
@@ -65,7 +60,7 @@ export default function Home() {
           ) : (
             searchState === SearchState.IDLE && (
               <div className="typed-out overflow-hidden text-center">
-                Try: Give me companies that simplify trucker workflows
+                Try: Give me restaurants that serve chinese
               </div>
             )
           )}
