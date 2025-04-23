@@ -105,9 +105,9 @@ export default function Home() {
           Built by{" "}
           <Link
             className="cursor-pointer hover:underline text-orange-500"
-            href={"https://www.linkedin.com/in/maneeshkolli/"}
+            href={"https://www.linkedin.com/in/hrishik-desai/"}
           >
-            Maneesh Kolli
+            Hrishik Desai
           </Link>
         </span>
       </footer>
