@@ -8,7 +8,7 @@ import { Annotation, StateGraph } from "@langchain/langgraph";
 import { Document } from "@langchain/core/documents";
 import { headers } from "next/headers";
 
-import Companies from "@/lib/data/companies.json";
+import Restaurants from "@/lib/data/new_data.json";
 import { Company } from "@/lib/schema";
 import { VectorizeEmbed } from "@/lib/VectorizeEmbed";
 
@@ -111,14 +111,14 @@ export async function POST(request: Request) {
 
     const result = await graph.invoke({
       question:
-        "return only the names of the companies and in an array and return all the matching companies " +
+        "return only the names of the restaurants and in an array and return all the matching restaurants " +
         prompt,
     });
 
     const company_names:string[] = JSON.parse(result.answer);
     const normalizedNamesArray = company_names.map(name => name.toLowerCase());
 
-    const comps = Companies.filter((comp) => normalizedNamesArray.includes(comp.name.toLowerCase()))
+    const comps = Restaurants.filter((comp) => normalizedNamesArray.includes(comp.DBA.toLowerCase()))
 
     return NextResponse.json({
       response: comps,

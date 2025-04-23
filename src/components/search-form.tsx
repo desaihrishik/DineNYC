@@ -1,7 +1,7 @@
 import { set, z } from "zod";
 import { Input } from "./ui/input";
 import { Form, FormControl, FormField, FormItem } from "./ui/form";
-import { Company, SearchSchema } from "@/lib/schema";
+import { Company, Restaurant, SearchSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ArrowUp } from "lucide-react";
@@ -12,7 +12,7 @@ import { SearchState } from "@/lib/constants";
 
 interface SearchProps {
   setSearchState: Dispatch<SetStateAction<SearchState>>;
-  setCompanies: Dispatch<SetStateAction<Company[]>>;
+  setCompanies: Dispatch<SetStateAction<Restaurant[]>>;
 }
 
 const SearchComponent: FC<SearchProps> = ({ setSearchState, setCompanies }) => {
@@ -31,7 +31,7 @@ const SearchComponent: FC<SearchProps> = ({ setSearchState, setCompanies }) => {
           "Content-Type": "application/json",
         },
       });
-      const companies: Company[] = res.data.response;
+      const companies: Restaurant[] = res.data.response;
       if (companies.length === 0) {
         setSearchState(SearchState.NORESULT);
       } else {

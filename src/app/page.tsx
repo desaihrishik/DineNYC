@@ -1,19 +1,32 @@
 "use client";
 
 import SearchComponent from "@/components/search-form";
-import { Company } from "@/lib/schema";
+import { Company, Restaurant } from "@/lib/schema";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SearchState } from "@/lib/constants";
+import { Button } from "@/components/ui/button";
+import { format } from "path";
+
+
+function getGradeVariant(grade?: string) {
+  switch (grade) {
+    case "A": return "success";
+    case "B": return "warning";
+    case "C": return "destructive";
+    default:  return "secondary";
+  }
+}
+
 
 export default function Home() {
   const [searchState, setSearchState] = useState<SearchState>(SearchState.IDLE);
 
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<Restaurant[]>([]);
 
   return (
     <div
@@ -60,42 +73,59 @@ export default function Home() {
 
         <div className="grid sm:grid-cols-2 gap-6 w-fit">
           {Array.isArray(companies) &&
-            companies.map((company, _) => {
+            companies.map((company, index) => {
               return (
-                <Card key={company.name} className="lg:w-[29rem]">
-                  <CardContent className="p-4 flex flex-col gap-2">
-                    <div className="flex flex-row gap-x-4">
-                      <div className="overflow-hidden">
-                        <Image
-                          alt={company.name}
-                          src={company.logo_url}
-                          width={70}
-                          height={10}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-[1px] items-start text-wrap">
-                        <span className="font-semibold">{company.name}</span>
-                        <span className="text-sm">{company.header}</span>
-                      </div>
+                <Card key={index} className="lg:w-[29rem]">
+                <CardHeader className="flex items-center justify-between p-4">
+                  <h3 className="text-lg font-semibold">{company.DBA}</h3>
+                  <Badge >
+                    {company.GRADE ?? "N/A"}
+                  </Badge>
+                </CardHeader>
+          
+                <CardContent className="p-4 space-y-2">
+                  {/* Cuisine */}
+                  <div className="text-sm text-gray-600">
+                    {company["CUISINE DESCRIPTION"]}
+                  </div>
+          
+                  {/* Address */}
+                  <div className="text-sm">
+                    <span className="font-medium">{company.BUILDING} {company.STREET}</span>, {company.BORO} {company.ZIPCODE}
+                  </div>
+          
+                  {/* Score & Date */}
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <div>
+                      <span className="font-medium">Score:</span>{" "}
+                      {company.SCORE != null ? company.SCORE : "–"}
                     </div>
-                    <div className="text-xs text-gray-500">
-                      {company.description}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex flex-wrap gap-2">
-                    {company.tags.map((tag, _) => {
-                      return (
-                        <Badge
-                          key={tag}
-                          variant="outline"
-                          className="text-nowrap rounded-full"
-                        >
-                          {tag}
-                        </Badge>
-                      );
-                    })}
-                  </CardFooter>
-                </Card>
+                    
+                  </div>
+                </CardContent>
+          
+                <CardFooter className="flex flex-wrap gap-2 p-4">
+                  {/* Call button */}
+                  {company.PHONE && (
+                    <Button size="sm" asChild>
+                      <a href={`tel:${company.PHONE}`}>Call</a>
+                    </Button>
+                  )}
+          
+                  {/* Map button */}
+                  {company.Latitude && company.Longitude && (
+                    <Button size="sm" variant="outline" asChild>
+                      <a
+                        href={`https://maps.google.com/?q=${company.Latitude},${company.Longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View on Map
+                      </a>
+                    </Button>
+                  )}
+                </CardFooter>
+              </Card>
               );
             })}
         </div>

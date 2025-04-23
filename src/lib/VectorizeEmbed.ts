@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { Company } from "@/lib/schema";
+import { Company, Restaurant } from "@/lib/schema";
 import { PineconeStore } from "@langchain/pinecone";
 import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
 import { Document } from "langchain/document";
@@ -19,19 +19,19 @@ export const VectorizeEmbed = async () => {
     });
 
     const json_doc = readFileSync(
-      process.cwd() + "/src/lib/data/companies.json"
+      process.cwd() + "/src/lib/data/new_data.json"
     ).toString();
-    const companies: Company[] = JSON.parse(json_doc);
+    const companies: Restaurant[] = JSON.parse(json_doc);
     const docs: Document[] = [];
 
     companies.forEach((comp) => {
       const doc = new Document({
-        pageContent: comp.description,
+        pageContent: comp["CUISINE DESCRIPTION"],
         metadata: {
-          name: comp.name,
-          header: comp.header,
-          tags: comp.tags,
-          logo_url: comp.logo_url,
+         name: comp.DBA,
+          borough: comp.BORO,
+          phone: comp.PHONE,
+          rating: comp.GRADE,
         },
       });
       docs.push(doc);
