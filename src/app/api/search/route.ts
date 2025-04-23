@@ -10,6 +10,7 @@ import { headers } from "next/headers";
 
 import Companies from "@/lib/data/companies.json";
 import { Company } from "@/lib/schema";
+import { VectorizeEmbed } from "@/lib/VectorizeEmbed";
 
 const llm = new ChatOpenAI({
   model: "gpt-4o-mini",
@@ -25,6 +26,9 @@ const pinecone = new PineconeClient();
 const rateLimit = new Map();
 
 export async function POST(request: Request) {
+
+  // const res = await VectorizeEmbed()
+
   try {
     // rate limiting
     const headersList = headers();
