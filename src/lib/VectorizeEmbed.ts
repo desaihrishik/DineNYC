@@ -19,7 +19,7 @@ export const VectorizeEmbed = async () => {
     });
 
     const json_doc = readFileSync(
-      process.cwd() + "/src/lib/data/new_data.json"
+      process.cwd() + "/src/lib/data/Restaurants-Dataset.json"
     ).toString();
     const companies: Restaurant[] = JSON.parse(json_doc);
     const docs: Document[] = [];
@@ -28,7 +28,7 @@ export const VectorizeEmbed = async () => {
       const doc = new Document({
         pageContent: comp["CUISINE DESCRIPTION"],
         metadata: {
-         name: comp.DBA,
+          name: comp.DBA,
           borough: comp.BORO,
           phone: comp.PHONE,
           rating: comp.GRADE,

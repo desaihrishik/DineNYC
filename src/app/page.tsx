@@ -88,15 +88,7 @@ export default function Home() {
                   <div className="text-sm">
                     <span className="font-medium">{company.BUILDING} {company.STREET}</span>, {company.BORO} {company.ZIPCODE}
                   </div>
-          
-                  {/* Score & Date */}
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <div>
-                      <span className="font-medium">Score:</span>{" "}
-                      {company.SCORE != null ? company.SCORE : "–"}
-                    </div>
-                    
-                  </div>
+                  
                 </CardContent>
           
                 <CardFooter className="flex flex-wrap gap-2 p-4">

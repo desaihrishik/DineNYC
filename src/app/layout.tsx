@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YSeek - AI YC Search",
-  description: "Search for Y Combinator backed companies using AI",
+  title: "RestaurantSeek - AI Restaurant Search",
+  description: "Search for NYC based restaurants using AI",
 };
 
 export default function RootLayout({

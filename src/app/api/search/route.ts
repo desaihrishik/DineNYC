@@ -8,7 +8,7 @@ import { Annotation, StateGraph } from "@langchain/langgraph";
 import { Document } from "@langchain/core/documents";
 import { headers } from "next/headers";
 
-import Restaurants from "@/lib/data/new_data.json";
+import Restaurants from "@/lib/data/Restaurants-Dataset.json";
 import { Company } from "@/lib/schema";
 import { VectorizeEmbed } from "@/lib/VectorizeEmbed";
 
@@ -27,7 +27,7 @@ const rateLimit = new Map();
 
 export async function POST(request: Request) {
 
-  // const res = await VectorizeEmbed()
+ //  const res = await VectorizeEmbed()
 
   try {
     // rate limiting
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     const generate = async (state: typeof StateAnnotation.State) => {
       const docsContent = state.context
         .map((doc: Document) => {
-          return "{ company_name: " + doc.metadata.name + " description: " + doc.pageContent + "}";
+          return "{ restaurant_name: " + doc.metadata.name + " description: " + doc.pageContent + "}";
         })
         .join("\n");
       const messages = await promptTemplate.invoke({
@@ -116,10 +116,11 @@ export async function POST(request: Request) {
     });
 
     const company_names:string[] = JSON.parse(result.answer);
+    
     const normalizedNamesArray = company_names.map(name => name.toLowerCase());
-
+    console.log("restaurants: ", company_names)
     const comps = Restaurants.filter((comp) => normalizedNamesArray.includes(comp.DBA.toLowerCase()))
-
+    
     return NextResponse.json({
       response: comps,
     });
