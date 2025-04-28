@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RestaurantSeek - AI Restaurant Search",
+  title: "DineNYC - AI Restaurant Search",
   description: "Search for NYC based restaurants using AI",
 };
 
