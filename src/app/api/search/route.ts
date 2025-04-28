@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     });
 
     const retrieve = async (state: typeof InputStateAnnotation.State) => {
-      const retrievedDocs = await vectorStore.similaritySearch(state.question);
+      const retrievedDocs = await vectorStore.similaritySearch(state.question,10);
       return { context: retrievedDocs };
     };
 
@@ -128,4 +128,5 @@ export async function POST(request: Request) {
     console.log("error here: ", error);
     return NextResponse.json({ error: error }, { status: 500 });
   }
+  
 }
