@@ -9,25 +9,49 @@ import { Document } from "@langchain/core/documents";
 import { headers } from "next/headers";
 
 import Restaurants from "@/lib/data/Restaurants-Dataset.json";
-import { Company } from "@/lib/schema";
-import { VectorizeEmbed } from "@/lib/VectorizeEmbed";
-
-const llm = new ChatOpenAI({
-  model: "gpt-4o-mini",
-  temperature: 0,
-});
-
-const embeddings = new OpenAIEmbeddings({
-  model: "text-embedding-3-large",
-});
-
-const pinecone = new PineconeClient();
 
 const rateLimit = new Map();
 
-export async function POST(request: Request) {
+function fallbackSearch(prompt: string) {
+  const terms = prompt
+    .toLowerCase()
+    .split(/[\s,]+/)
+    .map((term) => term.trim())
+    .filter(Boolean);
 
- //  const res = await VectorizeEmbed()
+  if (terms.length === 0) {
+    return [];
+  }
+
+  const scored = Restaurants.map((restaurant) => {
+    const searchableText = [
+      restaurant.DBA,
+      restaurant["CUISINE DESCRIPTION"],
+      restaurant.BORO,
+      restaurant.STREET,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    let score = 0;
+    for (const term of terms) {
+      if (searchableText.includes(term)) {
+        score += 1;
+      }
+    }
+
+    return { restaurant, score };
+  })
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 50)
+    .map((entry) => entry.restaurant);
+
+  return scored;
+}
+
+export async function POST(request: Request) {
+  let prompt = "";
 
   try {
     // rate limiting
@@ -54,20 +78,44 @@ export async function POST(request: Request) {
 
     // get prompt
     const body = await request.json();
-    const prompt = body.prompt;
+    prompt = body.prompt;
 
     userLimit.count++;
     rateLimit.set(ip, userLimit);
 
     if (!prompt || prompt === "") {
       return NextResponse.json({
-        message: "Propmt is either empty or wrong",
+        message: "Prompt is either empty or wrong",
         statusCode: 422,
       });
     }
 
+    const openAiApiKey = process.env.OPENAI_API_KEY?.trim();
+    const pineconeApiKey = process.env.PINECONE_API_KEY?.trim();
+    const pineconeIndex = process.env.PINECONE_INDEX?.trim();
+
+    if (!openAiApiKey || !pineconeApiKey || !pineconeIndex) {
+      const localResults = fallbackSearch(prompt);
+      return NextResponse.json({
+        response: localResults,
+        mode: "fallback",
+      });
+    }
+
+    const llm = new ChatOpenAI({
+      model: "gpt-4o-mini",
+      temperature: 0,
+      apiKey: openAiApiKey,
+    });
+
+    const embeddings = new OpenAIEmbeddings({
+      model: "text-embedding-3-large",
+      apiKey: openAiApiKey,
+    });
+
+    const pinecone = new PineconeClient({ apiKey: pineconeApiKey });
     const vectorStore = new PineconeStore(embeddings, {
-      pineconeIndex: pinecone.Index(process.env.PINECONE_INDEX || ""),
+      pineconeIndex: pinecone.Index(pineconeIndex),
     });
 
     const promptTemplate = await pull<ChatPromptTemplate>("rlm/rag-prompt");
@@ -123,10 +171,21 @@ export async function POST(request: Request) {
     
     return NextResponse.json({
       response: comps,
+      mode: "vector",
     });
   } catch (error) {
     console.log("error here: ", error);
-    return NextResponse.json({ error: error }, { status: 500 });
+    const localResults = fallbackSearch(prompt);
+    const message = error instanceof Error ? error.message : "Unknown server error";
+    return NextResponse.json(
+      {
+        response: localResults,
+        mode: "fallback",
+        warning: "Vector search failed. Returned fallback dataset results.",
+        details: message,
+      },
+      { status: 200 }
+    );
   }
   
 }
