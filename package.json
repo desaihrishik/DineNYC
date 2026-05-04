@@ -28,7 +28,7 @@
     "faiss-node": "^0.5.1",
     "langchain": "^0.3.23",
     "lucide-react": "^0.475.0",
-    "next": "15.1.7",
+    "next": "^16.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
